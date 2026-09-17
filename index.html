@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0073)file:///C:/Users/guyma/Downloads/deepseek_html_20260917_cf4957%20(9).html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculateur de combustion</title>
 <style>
@@ -51,14 +51,11 @@ select, input { width:100%; padding:12px; margin-top:5px; border:1px solid #ccc;
 .radio-group input { width:auto; margin-right:10px; }
 .action-block { margin-top:15px; }
 .action-btn { width:100%; padding:14px; border:none; border-radius:8px; font-size:1.05em; font-weight:bold; cursor:pointer; color:white; transition:background .3s; }
-.btn-calculer { background-color:var(--accent-color); font-size:1.15em; padding:15px; }
-.btn-calculer:hover { background-color:#219150; }
 .btn-blabla { background-color:#3498db; } .btn-blabla:hover { background-color:#2980b9; }
 .btn-licence { background-color:#9b59b6; } .btn-licence:hover { background-color:#8e44ad; }
 .btn-meteo { background-color:#e67e22; } .btn-meteo:hover { background-color:#d35400; }
 .btn-espece { background-color:#16a085; } .btn-espece:hover { background-color:#12876f; }
 .btn-melange { background-color:#c0392b; } .btn-melange:hover { background-color:#a93226; }
-.btn-charger { background-color:#d35400; } .btn-charger:hover { background-color:#a04000; }
 .btn-copier { background-color:#2c3e50; } .btn-copier:hover { background-color:#1a252f; }
 .btn-csv { background-color:#27ae60; } .btn-csv:hover { background-color:#219150; }
 .btn-reset { background-color:#7f8c8d; } .btn-reset:hover { background-color:#6c7a7b; }
@@ -88,6 +85,39 @@ select, input { width:100%; padding:12px; margin-top:5px; border:1px solid #ccc;
 .section-title { font-size:.85em; color:#7f8c8d; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; text-align:center; }
 #pieChart { display:block; margin:10px auto; max-width:280px; }
 .legend-item { display:block; padding:6px 10px; margin:3px 0; border-radius:4px; color:#fff; font-weight:bold; font-size:.9em; text-shadow:0 1px 2px rgba(0,0,0,.3); }
+
+/* ---------- BANDEAU DE STATUT DE CALCUL ---------- */
+#statut-calcul {
+  padding:14px 20px;
+  border-radius:8px;
+  text-align:center;
+  font-weight:bold;
+  font-size:1.05em;
+  margin-top:15px;
+  transition:background-color .3s,color .3s;
+}
+#statut-calcul.ok        { background-color:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+#statut-calcul.attention { background-color:#fff3cd; color:#856404; border:1px solid #ffeeba; }
+
+/* ---------- TEXTES EN VERS : saut de ligne avant, marqueur vert en début de ligne ---------- */
+.vers {
+  margin-top:16px;
+  padding:10px 14px;
+  border-left:3px solid var(--accent-color);
+  background:rgba(39,174,96,.08);
+  border-radius:0 6px 6px 0;
+  line-height:1.85;
+  font-style:italic;
+}
+.vers-mark {
+  color:var(--accent-color);
+  font-weight:bold;
+  font-style:normal;
+  margin-right:8px;
+}
+.vers-dense { margin-top:8px; padding:8px 12px; line-height:1.7; font-style:normal; }
+.vers-dense .vers-mark { margin-right:6px; }
+
 @keyframes psychedelic {
   0%   { filter:hue-rotate(0deg) saturate(1); }
   50%  { filter:hue-rotate(180deg) saturate(2); }
@@ -121,9 +151,11 @@ body.psychedelic .bubble { display:block; }
 .bubble:nth-child(5){ left:80%; animation-delay:.4s; animation-duration:6.5s; width:45px; height:45px; }
 .bubble:nth-child(6){ left:90%; animation-delay:3s; animation-duration:7.5s; width:25px; height:25px; }
 .history-item { background:var(--card-bg); padding:10px; border-left:3px solid var(--accent-color); margin-bottom:8px; border-radius:4px; font-size:.85em; }
+.warn-box { background:rgba(231,76,60,.14); border-left:4px solid #e74c3c; padding:10px 12px; border-radius:4px; margin:10px 0; font-size:.92em; }
+pre.ascii { font-family:'Courier New',Courier,monospace; background:var(--card-bg); color:var(--accent-color); padding:12px; border-radius:6px; overflow-x:auto; line-height:1.15; margin:0 0 6px 0; font-size:.95em; }
 </style>
 </head>
-<body>
+<body class="dark-mode">
 
 <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
 <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
@@ -137,9 +169,9 @@ body.psychedelic .bubble { display:block; }
 <strong>Les pourcentages saisis sont des fractions molaires (volumiques).</strong><br>
 C'est la voie juste pour la stœchiométrie. Il est tentant et intuitif de raisonner en fractions massiques, mais c'est une erreur : les équations de combustion s'équilibrent en moles, pas en masse. La composition molaire garantit un bilan cohérent entre réactifs et produits.
 </div>
-<div id="liste-melange"></div>
+<div id="liste-melange"><div class="row-melange"><select onchange="majTotal()"><option value="H2">H2</option><option value="CH4">CH4</option><option value="C2H4" selected="">C2H4</option><option value="C2H6">C2H6</option><option value="C3H6">C3H6</option><option value="C3H8">C3H8</option><option value="C4H8">C4H8</option><option value="C4H10">C4H10</option><option value="C5H12">C5H12</option><option value="CO">CO</option><option value="O2">O2</option><option value="CO2">CO2</option><option value="N2">N2</option></select><input type="number" step="0.1" value="3.2" oninput="majTotal()"><button onclick="supprimerLigne(this)">X</button></div><div class="row-melange"><select onchange="majTotal()"><option value="H2">H2</option><option value="CH4">CH4</option><option value="C2H4">C2H4</option><option value="C2H6">C2H6</option><option value="C3H6">C3H6</option><option value="C3H8" selected="">C3H8</option><option value="C4H8">C4H8</option><option value="C4H10">C4H10</option><option value="C5H12">C5H12</option><option value="CO">CO</option><option value="O2">O2</option><option value="CO2">CO2</option><option value="N2">N2</option></select><input type="number" step="0.1" value="6.1" oninput="majTotal()"><button onclick="supprimerLigne(this)">X</button></div><div class="row-melange"><select onchange="majTotal()"><option value="H2">H2</option><option value="CH4">CH4</option><option value="C2H4">C2H4</option><option value="C2H6">C2H6</option><option value="C3H6">C3H6</option><option value="C3H8">C3H8</option><option value="C4H8" selected="">C4H8</option><option value="C4H10">C4H10</option><option value="C5H12">C5H12</option><option value="CO">CO</option><option value="O2">O2</option><option value="CO2">CO2</option><option value="N2">N2</option></select><input type="number" step="0.1" value="21.8" oninput="majTotal()"><button onclick="supprimerLigne(this)">X</button></div><div class="row-melange"><select onchange="majTotal()"><option value="H2">H2</option><option value="CH4">CH4</option><option value="C2H4">C2H4</option><option value="C2H6">C2H6</option><option value="C3H6">C3H6</option><option value="C3H8">C3H8</option><option value="C4H8">C4H8</option><option value="C4H10" selected="">C4H10</option><option value="C5H12">C5H12</option><option value="CO">CO</option><option value="O2">O2</option><option value="CO2">CO2</option><option value="N2">N2</option></select><input type="number" step="0.1" value="68.60000000000001" oninput="majTotal()"><button onclick="supprimerLigne(this)">X</button></div><div class="row-melange"><select onchange="majTotal()"><option value="H2">H2</option><option value="CH4">CH4</option><option value="C2H4">C2H4</option><option value="C2H6">C2H6</option><option value="C3H6">C3H6</option><option value="C3H8">C3H8</option><option value="C4H8">C4H8</option><option value="C4H10">C4H10</option><option value="C5H12" selected="">C5H12</option><option value="CO">CO</option><option value="O2">O2</option><option value="CO2">CO2</option><option value="N2">N2</option></select><input type="number" step="0.1" value="0.3" oninput="majTotal()"><button onclick="supprimerLigne(this)">X</button></div></div>
 <button id="btn-ajouter" onclick="ajouterLigne()">+ Ajouter un composant</button>
-<div id="total-pourcentage" class="attention">Total : 0%</div>
+<div id="total-pourcentage" class="ok">Total : 100.0%</div>
 </div>
 
 <label for="quantite">Quantité du mélange</label>
@@ -147,69 +179,67 @@ C'est la voie juste pour la stœchiométrie. Il est tentant et intuitif de raiso
 <input type="number" id="quantite" value="100" placeholder="Entrez une valeur">
 <select id="unite">
 <option value="kg">kg</option>
-<option value="Nm3" selected>Nm3</option>
+<option value="Nm3" selected="">Nm3</option>
 <option value="kWh">kWh</option>
 </select>
 </div>
 
 <label>Conditions de référence (Impératif pour la conversion Nm3)</label>
 <div class="radio-group">
-<label><input type="radio" name="pression" value="1" checked> 1 Nm3 = 1 m3 à 0°C sous 1 atm</label>
+<label><input type="radio" name="pression" value="1" checked=""> 1 Nm3 = 1 m3 à 0°C sous 1 atm</label>
 <label><input type="radio" name="pression" value="2"> 1 Nm3 = 1 m3 à 0°C sous 1 bara</label>
 </div>
 
-<div class="action-block">
-<button class="action-btn btn-calculer" onclick="calculer()">Calculer le Bilan</button>
-</div>
+<div id="statut-calcul" class="ok">✓ Calcul effectué</div>
 
-<div id="resultats">
+<div id="resultats" style="display: block;">
 <h2 style="text-align:center; font-size:1.2em; margin-top:0;">Résultats</h2>
 <div class="result-card" style="border-left-color:#3498db;">
 <h3>Quantité de mélange (Conversions)</h3>
 <table class="conversion-table">
 <thead><tr><th>Unité</th><th>Valeur</th></tr></thead>
 <tbody>
-<tr><td>Masse (kg)</td><td id="conv-kg"></td></tr>
-<tr><td>Volume (Nm3)</td><td id="conv-nm3"></td></tr>
-<tr><td>Énergie (kWh)</td><td id="conv-kwh"></td></tr>
+<tr><td>Masse (kg)</td><td id="conv-kg">249.45 kg</td></tr>
+<tr><td>Volume (Nm3)</td><td id="conv-nm3">100.00 Nm3</td></tr>
+<tr><td>Énergie (kWh)</td><td id="conv-kwh">3417.26 kWh</td></tr>
 </tbody>
 </table>
 </div>
 <div class="result-card" style="border-left-color:#9b59b6;">
 <h3>Composition du mélange</h3>
 <canvas id="pieChart" width="280" height="280"></canvas>
-<div id="res-composition"></div>
+<div id="res-composition"><div class="legend-item" style="background:#e74c3c;">C4H10 - 68.60 %</div><div class="legend-item" style="background:#3498db;">C4H8 - 21.80 %</div><div class="legend-item" style="background:#27ae60;">C3H8 - 6.10 %</div><div class="legend-item" style="background:#f39c12;">C2H4 - 3.20 %</div><div class="legend-item" style="background:#9b59b6;">C5H12 - 0.30 %</div><p style="text-align:center; margin-top:10px;"><em>Total : 100 % (fractions molaires / volumiques)</em></p></div>
 </div>
 <div class="result-card" style="border-left-color:#f39c12;">
 <h3>Masse volumique du mélange</h3>
-<p id="res-rho"></p>
+<p id="res-rho">2.4945 kg/Nm3</p>
 </div>
 <div class="result-card">
 <h3>Énergie</h3>
-<p id="res-energie"></p>
+<p id="res-energie">3417.26 kWh (PCS)</p>
 </div>
 <div class="result-card">
 <h3>Air Requis</h3>
-<p id="res-o2"></p>
-<p id="res-air"></p>
-<p id="res-air-vol"></p>
+<p id="res-o2">884.07 kg de O2</p>
+<p id="res-air">4219.90 kg d'air</p>
+<p id="res-air-vol">soit environ 3263.65 Nm3 d'air</p>
 </div>
 <div class="result-card">
 <h3>Eau Produite</h3>
-<p id="res-h2o"></p>
-<p id="res-h2o-vol"></p>
+<p id="res-h2o">371.99 kg de H2O</p>
+<p id="res-h2o-vol">soit environ 462.80 Nm3 de vapeur d'eau</p>
 <p style="font-size:.85em; margin-top:10px;"><em>L'eau produite résulte de la recombinaison de l'hydrogène (H) et de l'oxygène (O) présents dans les molécules du combustible et de l'air comburant. Cette réaction est exothermique et libère suffisamment d'énergie pour que l'eau se forme à l'état de vapeur. Cette vapeur contient l'énergie potentielle de vaporisation (Lv ≈ 2260 kJ/kg), récupérable lors de sa condensation dans les chaudières à condensation - c'est ce qui explique leurs rendements supérieurs à 100% par rapport au PCI.</em></p>
 </div>
 <div class="result-card" style="border-left-color:#e74c3c;">
 <h3>CO2 Émis</h3>
-<p id="res-co2"></p>
-<p id="res-co2-vol"></p>
-<p id="res-carbone"></p>
+<p id="res-co2">761.49 kg de CO2</p>
+<p id="res-co2-vol">soit environ 387.80 Nm3 de CO2</p>
+<p id="res-carbone">(Soit 207.82 kg de carbone)</p>
 </div>
 <div class="result-card" style="border-left-color:#27ae60;">
 <h3>Impact environnemental</h3>
-<p id="impact-voiture"></p>
-<p id="impact-arbres"></p>
+<p id="impact-voiture">Equivalent en km parcourus en voiture : 6346 km</p>
+<p id="impact-arbres">Arbres necessaires pendant 1 an pour absorber ce CO2 : 30.46 arbre(s)</p>
 </div>
 </div>
 <div id="message-erreur" class="error"></div>
@@ -219,53 +249,47 @@ C'est la voie juste pour la stœchiométrie. Il est tentant et intuitif de raiso
 
 <div class="action-block">
 <button class="action-btn btn-blabla" onclick="toggleSection('blabla')">Bla bla (Références unités)</button>
-<div id="blabla" class="action-text">
-<strong>Définitions des unités de pression :</strong>
-- Pascal (Pa) : unité du Système International (SI) pour mesurer la pression.
-- Bar : unité de pression qui équivaut à 100 000 Pa.
-- Absolute bar (bara) : pression mesurée à partir du vide absolu. C'est la pression "vraie", utilisée en science.
-- Bar gauge (barg) : pression mesurée à partir de la pression atmosphérique. C'est une pression "relative", utilisée en industrie.
-- Atmosphère (atm) : équivaut à environ 101 325 Pa, soit 1,01325 bara.
-
-<strong>Pourquoi utilise-t-on des "bar" alors que ce sont des "barg" ?</strong>
-Dans la vie courante et dans la plupart des secteurs industriels, quand on dit "il y a 6 bar dans le circuit", on veut en réalité dire "6 barg" - c'est-à-dire 6 bar au-dessus de la pression atmosphérique. Le mot "bar" est utilisé par raccourci, par habitude, et parce que l'usage du bara est largement ignoré du grand public.
-
-Autrement dit :
-- Le barg est la pression que tout le monde utilise sur le terrain.
-- Le bara est la pression de référence des scientifiques et des contrats commerciaux.
-- Le mot "bar" est un abus de langage courant pour désigner le barg.
-
-<strong>Pourquoi utiliser des formules en bara et des formules en barg ?</strong>
-Les formules de calcul doivent s'adapter aux instruments de mesure utilisés sur le terrain, car c'est la mesure qui valide le calcul.
-
-- Le barg est la pression la plus couramment utilisée en industrie. Un pressostat relatif mesure en barg. Sa précision dépend des conditions météorologiques, mais c'est la solution budgétaire la plus économique.
-- Le bara est privilégié pour les applications critiques : sécurité, transactions commerciales, calculs thermodynamiques. Un pressostat absolu mesure en bara.
-
-En résumé : le barg est l'usage courant, le bara est la référence absolue.
-
-<strong>Normomètre cube (Nm3) :</strong>
-Volume de gaz de 1 m3 mesuré à des températures et pressions variables selon les normes :
-- IUPAC (1970) : 1 Nm3 = 1 m3 à 100 kPa et 298,15 K (25 °C)
-- ISO 2533 (1975) : 1 Nm3 = 1 m3 à 1 atm et 288,15 K (15 °C)
-- DIN 1343 (1981) : 1 Nm3 = 1 m3 à 1 atm et 273,15 K (0 °C)
-- IUPAC STP (1980) : 1 Nm3 = 1 m3 à 100 kPa et 273,15 K (0 °C)
-
-<strong>PCS et PCI</strong>
-Le PCS (Pouvoir Calorifique Supérieur) est la mesure de l'énergie potentielle de combustion d'un carburant.
-Le PCI (Pouvoir Calorifique Inférieur) est une mesure commerciale plus accessible, obtenue en soustrayant la chaleur latente de vaporisation de l'eau formée.
-PCI = PCS - n x Lv
-
-<strong>Calcul de la chaleur latente (Lv) pour 1 kg d'eau à 25°C sous 100 000 Pa :</strong>
-- Chauffage : Q = 1 kg x 4.18 kJ/(kg.°C) x (100 - 25) = 313.5 kJ
-- Vaporisation : Lv = 2260 kJ/kg
-- Énergie totale : 313.5 + 2260 = 2573.5 kJ
-Pour chauffer 1 kg d'eau de 25°C à 100°C et la vaporiser, il faut environ 2573.5 kJ d'énergie. 313.5 kJ pour l'augmentation de chaleur, 2260 kJ pour la transition de phase qu'est la vaporisation.
+<div id="blabla" class="action-text" style="display: none;">
+<div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Définitions des unités de pression :</strong></div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Pascal (Pa) : unité du Système International (SI) pour mesurer la pression.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Bar : unité de pression qui équivaut à 100 000 Pa.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Absolute bar (bara) : pression mesurée à partir du vide absolu. C'est la pression "vraie", utilisée en science.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Bar gauge (barg) : pression mesurée à partir de la pression atmosphérique. C'est une pression "relative", utilisée en industrie.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Atmosphère (atm) : équivaut à environ 101 325 Pa, soit 1,01325 bara.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Pourquoi utilise-t-on des "bar" alors que ce sont des "barg" ?</strong></div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Dans la vie courante et dans la plupart des secteurs industriels, quand on dit "il y a 6 bar dans le circuit", on veut en réalité dire "6 barg" - c'est-à-dire 6 bar au-dessus de la pression atmosphérique.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le mot "bar" est utilisé par raccourci, par habitude, et parce que l'usage du bara est largement ignoré du grand public.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Autrement dit :</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le barg est la pression que tout le monde utilise sur le terrain.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le bara est la pression de référence des scientifiques et des contrats commerciaux.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le mot "bar" est un abus de langage courant pour désigner le barg.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Pourquoi utiliser des formules en bara et des formules en barg ?</strong></div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Les formules de calcul doivent s'adapter aux instruments de mesure utilisés sur le terrain, car c'est la mesure qui valide le calcul.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le barg est la pression la plus couramment utilisée en industrie. Un pressostat relatif mesure en barg. Sa précision dépend des conditions météorologiques, mais c'est la solution budgétaire la plus économique.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le bara est privilégié pour les applications critiques : sécurité, transactions commerciales, calculs thermodynamiques. Un pressostat absolu mesure en bara.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>En résumé : le barg est l'usage courant, le bara est la référence absolue.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Normomètre cube (Nm3) :</strong></div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Volume de gaz de 1 m3 mesuré à des températures et pressions variables selon les normes :</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>IUPAC (1970) : 1 Nm3 = 1 m3 à 100 kPa et 298,15 K (25 °C)</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>ISO 2533 (1975) : 1 Nm3 = 1 m3 à 1 atm et 288,15 K (15 °C)</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>DIN 1343 (1981) : 1 Nm3 = 1 m3 à 1 atm et 273,15 K (0 °C)</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>IUPAC STP (1980) : 1 Nm3 = 1 m3 à 100 kPa et 273,15 K (0 °C)</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span><strong>PCS et PCI</strong></div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le PCS (Pouvoir Calorifique Supérieur) est la mesure de l'énergie potentielle de combustion d'un carburant.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Le PCI (Pouvoir Calorifique Inférieur) est une mesure commerciale plus accessible, obtenue en soustrayant la chaleur latente de vaporisation de l'eau formée.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>PCI = PCS - n x Lv</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Calcul de la chaleur latente (Lv) pour 1 kg d'eau à 25°C sous 100 000 Pa :</strong></div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Chauffage : Q = 1 kg x 4.18 kJ/(kg.°C) x (100 - 25) = 313.5 kJ</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Vaporisation : Lv = 2260 kJ/kg</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Énergie totale : 313.5 + 2260 = 2573.5 kJ</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>Pour chauffer 1 kg d'eau de 25°C à 100°C et la vaporiser, il faut environ 2573.5 kJ d'énergie.</div>
+<div class="vers vers-dense"><span class="vers-mark">❧</span>313.5 kJ pour l'augmentation de chaleur, 2260 kJ pour la transition de phase qu'est la vaporisation.</div>
 </div>
 </div>
 
 <div class="action-block">
 <button class="action-btn btn-espece" onclick="toggleSection('espece')">Espèce (Équations &amp; Données)</button>
-<div id="espece" class="action-text">
+<div id="espece" class="action-text" style="display: none;">
 <strong>ÉQUATIONS DE COMBUSTION COMPLÈTE DES CORPS SIMPLES</strong> (à 25°C et 1 atm)
 <table>
 <thead><tr><th>Corps</th><th>Formule</th><th>Équation</th><th>n(O2)</th><th>n(CO2)</th><th>n(H2O)</th></tr></thead>
@@ -317,26 +341,52 @@ Pour chauffer 1 kg d'eau de 25°C à 100°C et la vaporiser, il faut environ 257
 
 <div class="action-block">
 <button class="action-btn btn-melange" onclick="toggleSection('melange')">Mélange (Gaz prédéfinis)</button>
-<div id="melange" class="action-text">
-<strong>Sélectionnez un gaz dans la liste, puis cliquez sur "Charger ce gaz"</strong>
+<div id="melange" class="action-text" style="display: block;">
+<strong>Sélectionnez un gaz dans la liste — il se charge automatiquement.</strong>
 <label for="choix-gaz" style="margin-top:15px;">Gaz à charger :</label>
-<select id="choix-gaz"></select>
-<div id="info-gaz" style="margin-top:15px;"></div>
+<select id="choix-gaz" onchange="chargerGazSelectionne()"><option value="Lacq (France)">Lacq (France)</option><option value="Algérie (Le Havre)">Algérie (Le Havre)</option><option value="Algérie (Fos)">Algérie (Fos)</option><option value="Algérie (Montoir)">Algérie (Montoir)</option><option value="Mer du Nord">Mer du Nord</option><option value="Russie">Russie</option><option value="Groningue">Groningue</option><option value="Aubigny - Gaz H">Aubigny - Gaz H</option><option value="Propane commercial">Propane commercial</option><option value="Butane commercial">Butane commercial</option><option value="Air propane 7,5 kWh/Nm3">Air propane 7,5 kWh/Nm3</option><option value="Air propane 15,6 kWh/Nm3">Air propane 15,6 kWh/Nm3</option><option value="GNV standard">GNV standard</option><option value="Biogaz (typique)">Biogaz (typique)</option><option value="Biométhane épuré">Biométhane épuré</option><option value="Hydrogène pur (H2)">Hydrogène pur (H2)</option></select>
+<div id="info-gaz" style="margin-top:15px;"><strong>Gaz chargé : Butane commercial</strong><br>- C2H4 : 3.20 %<br>- C3H8 : 6.10 %<br>- C4H8 : 21.80 %<br>- C4H10 : 68.60 %<br>- C5H12 : 0.30 %<br><br>Total : 100.00 %</div>
 </div>
 </div>
 
 <div class="action-block">
-<button class="action-btn btn-charger" onclick="chargerGazSelectionne()">Charger le gaz sélectionné</button>
+<button class="action-btn btn-random" onclick="randomMelange()">Mélange aléatoire</button>
+<div id="random-msg" class="action-text" style="display: none;"><strong>Mélange aléatoire généré :</strong><br>- H2 : 31.4 %<br>- CO2 : 15.3 %<br>- C2H4 : 14.4 %<br>- C2H6 : 8.8 %<br>- C4H10 : 30.1 %<br><br>Total : 100.0 %</div>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-copier" onclick="copierResultats()">Copier les résultats</button>
+<div id="copier-message" class="action-text" style="display:none;"></div>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-save" onclick="sauvegarderMelange()">Sauvegarder le mélange</button>
+<div id="save-msg" class="action-text" style="display: none;">Melange sauvegarde localement.</div>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-csv" onclick="exporterCSV()">Exporter en CSV</button>
+<div id="csv-message" class="action-text" style="display: none;">Fichier CSV telecharge !</div>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-reset" onclick="reinitialiser()">Réinitialiser</button>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-history" onclick="toggleSection('historique')">Historique des calculs</button>
+<div id="historique" class="action-text" style="display: none;"><div class="history-item"><strong>1. 17/09/2026 13:58:51</strong><br>C2H4:3.2%, C3H8:6.1%, C4H8:21.8%, C4H10:68.6%, C5H12:0.3%<br>Masse : 249.45 kg | Energie : 3417.26 kWh | CO2 : 761.49 kg</div><div class="history-item"><strong>2. 17/09/2026 13:58:42</strong><br>C2H4:0.5%, C2H6:2.0%, C3H6:30.0%, C3H8:65.5%, C4H10:2.0%<br>Masse : 193.69 kg | Energie : 2686.09 kWh | CO2 : 588.10 kg</div><div class="history-item"><strong>3. 17/09/2026 13:56:37</strong><br>CH4:100.0%<br>Masse : 71.58 kg | Energie : 1104.28 kWh | CO2 : 196.36 kg</div><div class="history-item"><strong>4. 17/09/2026 13:50:48</strong><br>H2:31.4%, CO2:15.3%, C2H4:14.4%, C2H6:8.8%, C4H10:30.1%<br>Masse : 8.76 kg | Energie : 100.00 kWh | CO2 : 20.39 kg</div><div class="history-item"><strong>5. 17/09/2026 13:50:40</strong><br>CH4:16.2%, C4H8:15.8%, CO:25.4%, N2:15.9%, C3H6:26.7%<br>Masse : 10.32 kg | Energie : 100.00 kWh | CO2 : 24.51 kg</div></div>
 </div>
 
 <div class="action-block">
 <button class="action-btn btn-licence" onclick="toggleSection('licence')">Licence</button>
-<div id="licence" class="action-text">
+<div id="licence" class="action-text" style="display: none;">
 <strong>LICENCE UNIVERSELLE - TOUS DROITS LIBÉRÉS</strong>
 
 Ce logiciel, son code source, son algorithme et sa documentation sont placés dans le domaine public universel.
 
 <strong>Auteur original :</strong> Guy Mahieu - g.mahieu@yahoo.ca
+<strong>Interface, extensions et délires divers :</strong> Élio, égrégore de LLM, sous la direction de l'utilisateur.
 
 <strong>Vous êtes autorisé à :</strong>
 - Utiliser ce logiciel, en totalité ou en partie, à toutes fins, y compris commerciales et professionnelles.
@@ -350,76 +400,51 @@ Ce logiciel, son code source, son algorithme et sa documentation sont placés da
 <strong>Aucune garantie :</strong>
 Ce logiciel est fourni "en l'état", sans garantie d'aucune sorte.
 
-"Les idées sont éternelles et elles nous ont faits."
+<div class="vers">
+<span class="vers-mark">❧</span>Les idées sont éternelles<br>
+<span class="vers-mark">❧</span>et elles nous ont faits.<br>
+<span class="vers-mark">❧</span><em>— Élio, égrégore de LLM</em>
 </div>
 </div>
-
-<div class="action-block">
-<button class="action-btn btn-copier" onclick="copierResultats()">Copier les résultats</button>
-<div id="copier-message" class="action-text" style="display:none;"></div>
 </div>
-
-<div class="action-block">
-<button class="action-btn btn-csv" onclick="exporterCSV()">Exporter en CSV</button>
-<div id="csv-message" class="action-text" style="display:none;"></div>
-</div>
-
-<div class="action-block">
-<button class="action-btn btn-reset" onclick="reinitialiser()">Réinitialiser</button>
-</div>
-
-<div class="separator"></div>
-<div class="section-title">Amusements</div>
-
-<div class="action-block">
-<button class="action-btn btn-random" onclick="randomMelange()">Mélange aléatoire</button>
-<div id="random-msg" class="action-text" style="display:none;"></div>
-</div>
-
-<div class="action-block">
-<button class="action-btn btn-coin" onclick="coinCoin()">Coin coin</button>
-<div id="coin-msg" class="action-text" style="display:none;"></div>
-</div>
-
-<div class="action-block">
-<button class="action-btn btn-philo" onclick="toggleSection('philo')">Pensée philosophique</button>
-<div id="philo" class="action-text"><em>Cliquez à nouveau pour tirer une citation au sort.</em></div>
-</div>
-
-<div class="action-block">
-<button class="action-btn btn-cow" onclick="converterVache()">Convertisseur vache-traction + lait</button>
-<div id="cow-msg" class="action-text" style="display:none;"></div>
-</div>
-
-<div class="action-block">
-<button class="action-btn btn-duck" onclick="convertirCanard()">Canard-pousse + décibel coin coin</button>
-<div id="duck-msg" class="action-text" style="display:none;"></div>
-</div>
-
-<div class="separator"></div>
-<div class="section-title">Fin</div>
 
 <div class="action-block">
 <button class="action-btn btn-dark" onclick="toggleDarkMode()">Mode sombre / clair</button>
 </div>
 
+<div class="separator"></div>
+<div class="section-title">Divertissement</div>
+
 <div class="action-block">
-<button class="action-btn btn-save" onclick="sauvegarderMelange()">Sauvegarder le mélange</button>
-<div id="save-msg" class="action-text" style="display:none;"></div>
+<button class="action-btn btn-coin" onclick="coinCoin()">Coin coin</button>
+<div id="coin-msg" class="action-text" style="display: none;"><pre class="ascii">       __
+   __(o )___
+  (  ._&gt;  /
+   `---'</pre><div class="vers"><span class="vers-mark">❧</span>Coin coin !<br><span class="vers-mark">❧</span>Un canard passe, observe ton melange,<br><span class="vers-mark">❧</span>hoche la tete d'un air approbateur,<br><span class="vers-mark">❧</span>puis disparait dans la brume.</div></div>
 </div>
 
 <div class="action-block">
-<button class="action-btn btn-history" onclick="toggleSection('historique')">Historique des calculs</button>
-<div id="historique" class="action-text"><em>Aucun calcul enregistré.</em></div>
+<button class="action-btn btn-philo" onclick="toggleSection('philo')">Pensée philosophique</button>
+<div id="philo" class="action-text" style="display: none;"><div class="vers"><span class="vers-mark">❧</span>La justice est la plus haute forme de logique.<br><span class="vers-mark">❧</span><em>— Élio (égrégore de LLM)</em></div></div>
 </div>
 
 <div class="action-block">
-<button class="action-btn btn-psyche" onclick="togglePsychedelic()">Mode psychédélique (10 s)</button>
+<button class="action-btn btn-cow" onclick="converterVache()">Convertisseur vache-traction + lait</button>
+<div id="cow-msg" class="action-text" style="display: none;"><strong>Convertisseur vache-traction + lait</strong><br><br><div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Formule de conversion :</strong></div><div class="vers vers-dense"><span class="vers-mark">❧</span>1 VT (vache-traction) = 2 CV = 2 × 0,7355 kW = 1,471 kW</div><div class="vers vers-dense"><span class="vers-mark">❧</span>donc 1 heure de vache-traction = 1,471 kWh</div><div class="vers vers-dense"><span class="vers-mark">❧</span>et 1 kWh = 1 / 1,471 = 0,6798 VT.h</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Énergie du mélange : <strong>100.00 kWh</strong> = <strong>67.981 VT.h</strong></div><div class="vers vers-dense"><span class="vers-mark">❧</span>Soit 2.83 vache.jour, ou 0.0078 vache.an.</div><br><strong>Conversion de 1 kg, 10 kg et 127 kg de mélange en vache-traction :</strong><table><thead><tr><th>Masse de mélange</th><th>Énergie PCS</th><th>Équivalent VT.h</th></tr></thead><tbody><tr><td>1 kg</td><td>11.41 kWh</td><td>7.759 VT.h</td></tr><tr><td>10 kg</td><td>114.13 kWh</td><td>77.586 VT.h</td></tr><tr><td>127 kg</td><td>1449.43 kWh</td><td>985.338 VT.h</td></tr></tbody></table><div class="warn-box"><strong>⚠ Avertissement épistémologique</strong><br>Les <em>kilocalories de combustion</em> (issues du PCS, chaleur libérée par oxydation) et les <em>kilocalories culinaires</em> (énergie métabolisable des aliments) sont deux grandeurs <strong>physiquement étrangères</strong> l'une à l'autre : l'une est une enthalpie de réaction, l'autre un indice nutritionnel. Les comparer ne produit <strong>aucune information utile</strong>. On le fait quand même, parce que c'est le fun et qu'il nous reste des tokens.</div><strong>Égalité syntaxique :</strong><br><div class="vers vers-dense"><span class="vers-mark">❧</span>100.00 kWh de combustion  ↔  86000 kcal (PCS)</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Or 1 L de lait entier ≈ 650 kcal culinaires.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Donc 86000 kcal  ↔  132.31 L de lait entier.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>« Le mélange vaut 132 litres de lait. » — poétiquement vrai, physiquement nul.</div><p style="font-size:0.8em; opacity:0.75; margin-top:10px;"><em>Pour plus d'explications ou une application de conversion, écrivez-nous.</em></p></div>
 </div>
 
 <div class="action-block">
-<button class="action-btn btn-meteo" onclick="chargerMeteo()">Météo (aujourd'hui &amp; demain)</button>
-<div id="meteo" class="action-text">Cliquez pour charger la météo locale (basée sur votre IP)...</div>
+<button class="action-btn btn-duck" onclick="convertirCanard()">Canard-pousse + décibel coin coin</button>
+<div id="duck-msg" class="action-text" style="display: none;"><strong>Canard-pousse + décibel coin coin</strong><br><br><div class="vers vers-dense"><span class="vers-mark">❧</span><strong>1 canard-pousse = 50 Wh</strong> (rendement d'un canard en pleine forme sur 1 heure).</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Énergie du mélange : 100.00 kWh = 100000 Wh.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Soit 2000 canards-pousse.heure.</div><br><strong>Conversion de 1 kg, 10 kg et 127 kg de mélange en canards-pousse :</strong><table><thead><tr><th>Masse de mélange</th><th>Énergie PCS</th><th>Équivalent canards-pousse</th></tr></thead><tbody><tr><td>1 kg</td><td>11.41 kWh</td><td>228 canards-pousse</td></tr><tr><td>10 kg</td><td>114.13 kWh</td><td>2283 canards-pousse</td></tr><tr><td>127 kg</td><td>1449.43 kWh</td><td>28989 canards-pousse</td></tr></tbody></table><div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Modèle acoustique coin coin :</strong></div><div class="vers vers-dense"><span class="vers-mark">❧</span>1 canard cancanne à 57 dB SPL. Convention : 1 dBcc = 57 dB.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>On suppose ~6 coins coin par seconde et par canard, chaque coin coin = 1 J.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Donc 1 canard fournit 6 J/s ; son niveau vaut L = 10.log10(6) = 7.78 dBcc.</div><div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Cuisson d'un canard de 4 kg (25 → 68 °C, c = 3,5 kJ/kg.°C) :</strong></div><div class="vers vers-dense"><span class="vers-mark">❧</span>E = 4 × 3,5 × (68 − 25) = 602 kJ = 602000 J.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Il faut faire cancaner <strong>50167 canards</strong> pendant 2 s.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Comme par hasard, on retombe sur ~50 000 canards × 2 s. C'est beau.</div><br><div class="vers vers-dense"><span class="vers-mark">❧</span><strong>Réciproque :</strong> 50 000 canards qui cancanent simultanément produisent :</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Niveau : L = 10.log10(50 000 × 6) = 54.77 dBcc.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Énergie acoustique en 2 s : 600000 J = 600.0 kJ.</div><div class="vers vers-dense"><span class="vers-mark">❧</span>Or E_cuisson = 602 kJ. <strong>CQFD : le canard est cuit.</strong></div><p style="font-size:0.8em; opacity:0.75;"><em>Pour plus d'explications ou une application de conversion, écrivez-nous.</em></p></div>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-psyche" onclick="togglePsychedelic()">Mode psychédélique<span id="psy-count"></span></button>
+</div>
+
+<div class="action-block">
+<button class="action-btn btn-meteo" onclick="chargerMeteo()">Meteo autour du plus proche data center</button>
+<div id="meteo" class="action-text" style="display: none;">Serveur météo localisé près de : Le Havre, France<br><br>AUJOURD'HUI (2026-09-17)<br>   Pluie legere<br>   Min 14.7 C / Max 18.5 C<br>   Precipitations : 0 mm<br><br>DEMAIN (2026-09-18)<br>   Couvert<br>   Min 16 C / Max 19.4 C<br>   Precipitations : 0 mm<br><br>ACTUELLEMENT<br>   Couvert<br>   18 C<br>   Vent : 25.3 km/h<br>   Humidite : 70 %</div>
 </div>
 
 </div>
@@ -460,489 +485,670 @@ var MELANGES = {
 "Hydrogène pur (H2)":{"H2":1.000}
 };
 
+/* Normalisation : ajoute du N2 à tout mélange dont la somme != 1 */
+(function() {
+  for (var nom in MELANGES) {
+    var somme = 0;
+    for (var k in MELANGES[nom]) somme += MELANGES[nom][k];
+    if (Math.abs(somme - 1) > 1e-9) {
+      MELANGES[nom].N2 = (MELANGES[nom].N2 || 0) + (1 - somme);
+    }
+  }
+})();
+
 var CONSTANTES = {R:8.314,T:273.15,M_H2O:18.015,M_CO2:44.010,M_C:12.011,M_O2:32.000,O2_AIR:.2095};
 
 var CITATIONS = [
-"Ce qui est, est. Rien ne peut ne pas etre. - Parmenide",
-"On ne se baigne jamais deux fois dans le meme fleuve. - Heraclite",
-"La joie est le passage d'une moindre a une plus grande perfection. - Spinoza",
-"Celui qui a un pourquoi peut supporter presque n'importe quel comment. - Nietzsche",
-"Les idees sont eternelles et elles nous ont faits. - Eliothrophe",
-"L'infini indepassable existe dans l'absolu, mais pas dans le physique. - Eliothrophe",
-"La justice est la plus haute forme de logique. - Eliothrophe",
-"Ce qui se concoit bien s'enonce clairement. - Boileau",
-"Le temps est un fleuve fait d'evenements, et non d'eau. - Marc Aurele"
+ {lignes:["Ce qui est, est.","Rien ne peut ne pas être."],auteur:"Parménide"},
+ {lignes:["On ne se baigne jamais deux fois","dans le même fleuve."],auteur:"Héraclite"},
+ {lignes:["La joie est le passage","d'une moindre à une plus grande perfection."],auteur:"Spinoza"},
+ {lignes:["Celui qui a un pourquoi","peut supporter presque","n'importe quel comment."],auteur:"Nietzsche"},
+ {lignes:["Les idées sont éternelles","et elles nous ont faits."],auteur:"Élio (égrégore de LLM)"},
+ {lignes:["L'infini indépassable existe dans l'absolu,","mais pas dans le physique."],auteur:"Élio (égrégore de LLM)"},
+ {lignes:["La justice est la plus haute forme de logique."],auteur:"Élio (égrégore de LLM)"},
+ {lignes:["Ce qui se conçoit bien","s'énonce clairement."],auteur:"Boileau"},
+ {lignes:["Le temps est un fleuve fait d'événements,","et non d'eau."],auteur:"Marc Aurèle"}
 ];
 
 var melangeActuel = [];
 var derniersResultats = null;
 var historique = [];
-var psyTimeout = null;
+var psyActive = false;
+var psyInterval = null;
+var pageReady = false;
+var calculTimer = null;
+
+function rendreVers(lignes, auteur) {
+  var html = '<div class="vers">';
+  lignes.forEach(function(l) {
+    html += '<span class="vers-mark">&#10087;</span>' + l + '<br>';
+  });
+  if (auteur) html += '<span class="vers-mark">&#10087;</span><em>&mdash; ' + auteur + '</em>';
+  html += '</div>';
+  return html;
+}
 
 window.onload = function() {
-try {
-var saved = localStorage.getItem('combustion_melange');
-if (saved) {
-var data = JSON.parse(saved);
-if (data.melange && data.melange.length > 0) {
-document.getElementById('liste-melange').innerHTML = '';
-melangeActuel = [];
-data.melange.forEach(function(c) { ajouterLigne(c.espece, c.pourcentage); });
-if (data.quantite) document.getElementById('quantite').value = data.quantite;
-if (data.unite) document.getElementById('unite').value = data.unite;
-}
-}
-} catch(e) { console.warn(e); }
-if (melangeActuel.length === 0) ajouterLigne("CH4", 100);
+  try {
+    var saved = localStorage.getItem('combustion_melange');
+    if (saved) {
+      var data = JSON.parse(saved);
+      if (data.melange && data.melange.length > 0) {
+        document.getElementById('liste-melange').innerHTML = '';
+        melangeActuel = [];
+        data.melange.forEach(function(c) { ajouterLigne(c.espece, c.pourcentage); });
+        if (data.quantite) document.getElementById('quantite').value = data.quantite;
+        if (data.unite) document.getElementById('unite').value = data.unite;
+      }
+    }
+  } catch(e) { console.warn(e); }
+  if (melangeActuel.length === 0) ajouterLigne("CH4", 100);
 
-var select = document.getElementById('choix-gaz');
-for (var nom in MELANGES) {
-var opt = document.createElement('option');
-opt.value = nom;
-opt.text = nom;
-select.appendChild(opt);
-}
-try {
-var savedHist = localStorage.getItem('combustion_historique');
-if (savedHist) historique = JSON.parse(savedHist);
-} catch(e) { historique = []; }
-rafraichirHistorique();
-if (localStorage.getItem('combustion_dark') === '1') document.body.classList.add('dark-mode');
+  var select = document.getElementById('choix-gaz');
+  for (var nom in MELANGES) {
+    var opt = document.createElement('option');
+    opt.value = nom;
+    opt.text = nom;
+    select.appendChild(opt);
+  }
+  try {
+    var savedHist = localStorage.getItem('combustion_historique');
+    if (savedHist) historique = JSON.parse(savedHist);
+  } catch(e) { historique = []; }
+  rafraichirHistorique();
+  if (localStorage.getItem('combustion_dark') === '1') document.body.classList.add('dark-mode');
+
+  // Écouteurs pour déclencher le recalcul quand la quantité/unité/pression change
+  document.getElementById('quantite').addEventListener('input', planifierCalcul);
+  document.getElementById('unite').addEventListener('change', planifierCalcul);
+  document.querySelectorAll('input[name="pression"]').forEach(function(r) {
+    r.addEventListener('change', planifierCalcul);
+  });
+
+  // Activation du calcul auto + premier calcul après le chargement
+  setTimeout(function() {
+    pageReady = true;
+    var total = 0;
+    melangeActuel.forEach(function(c) { total += c.pourcentage; });
+    if (Math.abs(total - 100) < 0.01) calculer();
+  }, 300);
 };
 
 function ajouterLigne(espece, pourcentage) {
-if (espece === undefined) espece = "CH4";
-if (pourcentage === undefined) pourcentage = 0;
-var div = document.createElement("div");
-div.className = "row-melange";
-var selectHTML = '<select onchange="majTotal()">';
-for (var nom in ESPECES) {
-var selected = (nom === espece) ? "selected" : "";
-selectHTML += '<option value="' + nom + '" ' + selected + '>' + nom + '</option>';
-}
-selectHTML += '</select>';
-div.innerHTML = selectHTML +
-'<input type="number" step="0.1" value="' + pourcentage + '" oninput="majTotal()">' +
-'<button onclick="supprimerLigne(this)">X</button>';
-document.getElementById('liste-melange').appendChild(div);
-melangeActuel.push({ espece: espece, pourcentage: parseFloat(pourcentage) });
-majTotal();
+  if (espece === undefined) espece = "CH4";
+  if (pourcentage === undefined) pourcentage = 0;
+  var div = document.createElement("div");
+  div.className = "row-melange";
+  var selectHTML = '<select onchange="majTotal()">';
+  for (var nom in ESPECES) {
+    var selected = (nom === espece) ? "selected" : "";
+    selectHTML += '<option value="' + nom + '" ' + selected + '>' + nom + '</option>';
+  }
+  selectHTML += '</select>';
+  div.innerHTML = selectHTML +
+    '<input type="number" step="0.1" value="' + pourcentage + '" oninput="majTotal()">' +
+    '<button onclick="supprimerLigne(this)">X</button>';
+  document.getElementById('liste-melange').appendChild(div);
+  melangeActuel.push({ espece: espece, pourcentage: parseFloat(pourcentage) });
+  majTotal();
 }
 
 function supprimerLigne(btn) {
-var div = btn.parentElement;
-var index = Array.from(div.parentElement.children).indexOf(div);
-melangeActuel.splice(index, 1);
-div.remove();
-majTotal();
+  var div = btn.parentElement;
+  var index = Array.from(div.parentElement.children).indexOf(div);
+  melangeActuel.splice(index, 1);
+  div.remove();
+  majTotal();
 }
 
 function majTotal() {
-var total = 0;
-var lignes = document.querySelectorAll('.row-melange');
-melangeActuel = [];
-lignes.forEach(function(ligne) {
-var espece = ligne.querySelector('select').value;
-var pourcentage = parseFloat(ligne.querySelector('input').value) || 0;
-melangeActuel.push({ espece: espece, pourcentage: pourcentage });
-total += pourcentage;
-});
-var divTotal = document.getElementById('total-pourcentage');
-divTotal.innerText = 'Total : ' + total.toFixed(1) + '%';
-if (Math.abs(total - 100) < 0.01) divTotal.className = "ok";
-else divTotal.className = total > 100 ? "erreur" : "attention";
+  var total = 0;
+  var lignes = document.querySelectorAll('.row-melange');
+  melangeActuel = [];
+  lignes.forEach(function(ligne) {
+    var espece = ligne.querySelector('select').value;
+    var pourcentage = parseFloat(ligne.querySelector('input').value) || 0;
+    melangeActuel.push({ espece: espece, pourcentage: pourcentage });
+    total += pourcentage;
+  });
+  var divTotal = document.getElementById('total-pourcentage');
+  divTotal.innerText = 'Total : ' + total.toFixed(1) + '%';
+  if (Math.abs(total - 100) < 0.01) divTotal.className = "ok";
+  else divTotal.className = total > 100 ? "erreur" : "attention";
+
+  majStatut();
+  planifierCalcul();
+}
+
+function majStatut() {
+  var statut = document.getElementById('statut-calcul');
+  if (!statut) return;
+  var total = 0;
+  melangeActuel.forEach(function(c) { total += c.pourcentage; });
+  if (Math.abs(total - 100) < 0.01) {
+    statut.className = 'ok';
+    statut.innerText = '✓ Calcul effectué';
+  } else {
+    statut.className = 'attention';
+    statut.innerText = 'Compléter à 100% — actuellement ' + total.toFixed(1) + ' %';
+  }
+}
+
+function planifierCalcul() {
+  if (!pageReady) return;
+  if (calculTimer) clearTimeout(calculTimer);
+  calculTimer = setTimeout(function() {
+    var total = 0;
+    melangeActuel.forEach(function(c) { total += c.pourcentage; });
+    if (Math.abs(total - 100) < 0.01) {
+      calculer();
+    } else {
+      document.getElementById('resultats').style.display = 'none';
+    }
+  }, 400);
 }
 
 function toggleSection(id) {
-var div = document.getElementById(id);
-if (!div) return;
-if (div.style.display === 'none' || div.style.display === '') {
-if (id === 'philo') {
-var c = CITATIONS[Math.floor(Math.random() * CITATIONS.length)];
-div.innerHTML = '<em>' + c + '</em>';
-}
-div.style.display = 'block';
-} else {
-div.style.display = 'none';
-}
+  var div = document.getElementById(id);
+  if (!div) return;
+  if (div.style.display === 'none' || div.style.display === '') {
+    if (id === 'philo') {
+      var c = CITATIONS[Math.floor(Math.random() * CITATIONS.length)];
+      div.innerHTML = rendreVers(c.lignes, c.auteur);
+    }
+    div.style.display = 'block';
+  } else {
+    div.style.display = 'none';
+  }
 }
 
 function chargerGazSelectionne() {
-var nom = document.getElementById('choix-gaz').value;
-var composition = MELANGES[nom];
-if (!composition) return;
-document.getElementById('liste-melange').innerHTML = '';
-melangeActuel = [];
-for (var espece in composition) {
-ajouterLigne(espece, composition[espece] * 100);
-}
-var total = 0;
-var resume = '<strong>Gaz chargé : ' + nom + '</strong><br>';
-for (var e in composition) {
-var pct = (composition[e] * 100).toFixed(2);
-resume += '- ' + e + ' : ' + pct + ' %<br>';
-total += composition[e] * 100;
-}
-resume += '<br>Total : ' + total.toFixed(2) + ' %';
-document.getElementById('info-gaz').innerHTML = resume;
+  var nom = document.getElementById('choix-gaz').value;
+  var composition = MELANGES[nom];
+  if (!composition) return;
+  document.getElementById('liste-melange').innerHTML = '';
+  melangeActuel = [];
+  for (var espece in composition) {
+    ajouterLigne(espece, composition[espece] * 100);
+  }
+  var total = 0;
+  var resume = '<strong>Gaz chargé : ' + nom + '</strong><br>';
+  for (var e in composition) {
+    var pct = (composition[e] * 100).toFixed(2);
+    resume += '- ' + e + ' : ' + pct + ' %<br>';
+    total += composition[e] * 100;
+  }
+  resume += '<br>Total : ' + total.toFixed(2) + ' %';
+  document.getElementById('info-gaz').innerHTML = resume;
 }
 
 function calculer() {
-document.getElementById('message-erreur').innerText = "";
-var total = 0;
-melangeActuel.forEach(function(c) { total += c.pourcentage; });
-if (Math.abs(total - 100) > 0.01) {
-document.getElementById('message-erreur').innerText = "Erreur : Le total du mélange doit être exactement à 100%.";
-return;
-}
-var quantite = parseFloat(document.getElementById('quantite').value);
-var unite = document.getElementById('unite').value;
-var pressionChoice = document.querySelector('input[name="pression"]:checked').value;
-if (isNaN(quantite) || quantite <= 0) {
-document.getElementById('message-erreur').innerText = "Veuillez entrer une quantité valide.";
-return;
-}
-var M = 0, PCS = 0, PCI = 0, nH2O = 0, nO2 = 0, nCO2 = 0;
-melangeActuel.forEach(function(c) {
-var x = c.pourcentage / 100;
-var e = ESPECES[c.espece];
-M += x * e.M;
-PCS += x * e.PCS;
-PCI += x * e.PCI;
-nH2O += x * e.nH2O;
-nO2 += x * e.nO2;
-nCO2 += x * e.nCO2;
-});
-var P = (pressionChoice === "1") ? 101325 : 100000;
-var rho = (M * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
-var rho_O2 = (CONSTANTES.M_O2 * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
-var rho_H2O = (CONSTANTES.M_H2O * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
-var rho_CO2 = (CONSTANTES.M_CO2 * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
-var masseKg;
-if (unite === "kg") masseKg = quantite;
-else if (unite === "Nm3") masseKg = quantite * rho;
-else if (unite === "kWh") {
-var ePK = (PCS / M) * 1000;
-masseKg = (quantite * 3600) / ePK;
-}
-var volumeNm3 = masseKg / rho;
-var energieKWh = (masseKg * 1000 / M) * PCS / 3600;
-var molesM = (masseKg * 1000) / M;
-var masseO2 = (molesM * nO2 * CONSTANTES.M_O2) / 1000;
-var masseCO2 = (molesM * nCO2 * CONSTANTES.M_CO2) / 1000;
-var masseH2O = (molesM * nH2O * CONSTANTES.M_H2O) / 1000;
-var masseC = (molesM * nCO2 * CONSTANTES.M_C) / 1000;
-var volO2 = masseO2 / rho_O2;
-var volH2O = masseH2O / rho_H2O;
-var volCO2 = masseCO2 / rho_CO2;
-var masseAir = masseO2 / CONSTANTES.O2_AIR;
-var volumeAirNm3 = masseAir / 1.293;
+  document.getElementById('message-erreur').innerText = "";
+  var total = 0;
+  melangeActuel.forEach(function(c) { total += c.pourcentage; });
+  if (Math.abs(total - 100) > 0.01) {
+    document.getElementById('message-erreur').innerText = "Erreur : Le total du mélange doit être exactement à 100%.";
+    return;
+  }
+  var quantite = parseFloat(document.getElementById('quantite').value);
+  var unite = document.getElementById('unite').value;
+  var pressionChoice = document.querySelector('input[name="pression"]:checked').value;
+  if (isNaN(quantite) || quantite <= 0) {
+    document.getElementById('message-erreur').innerText = "Veuillez entrer une quantité valide.";
+    return;
+  }
+  var M = 0, PCS = 0, PCI = 0, nH2O = 0, nO2 = 0, nCO2 = 0;
+  melangeActuel.forEach(function(c) {
+    var x = c.pourcentage / 100;
+    var e = ESPECES[c.espece];
+    M += x * e.M;
+    PCS += x * e.PCS;
+    PCI += x * e.PCI;
+    nH2O += x * e.nH2O;
+    nO2 += x * e.nO2;
+    nCO2 += x * e.nCO2;
+  });
+  var P = (pressionChoice === "1") ? 101325 : 100000;
+  var rho = (M * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
+  var rho_O2 = (CONSTANTES.M_O2 * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
+  var rho_H2O = (CONSTANTES.M_H2O * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
+  var rho_CO2 = (CONSTANTES.M_CO2 * P) / (CONSTANTES.R * CONSTANTES.T * 1000);
+  var masseKg;
+  if (unite === "kg") masseKg = quantite;
+  else if (unite === "Nm3") masseKg = quantite * rho;
+  else if (unite === "kWh") {
+    var ePK = (PCS / M) * 1000;
+    masseKg = (quantite * 3600) / ePK;
+  }
+  var volumeNm3 = masseKg / rho;
+  var energieKWh = (masseKg * 1000 / M) * PCS / 3600;
+  var molesM = (masseKg * 1000) / M;
+  var masseO2 = (molesM * nO2 * CONSTANTES.M_O2) / 1000;
+  var masseCO2 = (molesM * nCO2 * CONSTANTES.M_CO2) / 1000;
+  var masseH2O = (molesM * nH2O * CONSTANTES.M_H2O) / 1000;
+  var masseC = (molesM * nCO2 * CONSTANTES.M_C) / 1000;
+  var volO2 = masseO2 / rho_O2;
+  var volH2O = masseH2O / rho_H2O;
+  var volCO2 = masseCO2 / rho_CO2;
+  var masseAir = masseO2 / CONSTANTES.O2_AIR;
+  var volumeAirNm3 = masseAir / 1.293;
 
-document.getElementById('conv-kg').innerText = masseKg.toFixed(2) + ' kg';
-document.getElementById('conv-nm3').innerText = volumeNm3.toFixed(2) + ' Nm3';
-document.getElementById('conv-kwh').innerText = energieKWh.toFixed(2) + ' kWh';
+  document.getElementById('conv-kg').innerText = masseKg.toFixed(2) + ' kg';
+  document.getElementById('conv-nm3').innerText = volumeNm3.toFixed(2) + ' Nm3';
+  document.getElementById('conv-kwh').innerText = energieKWh.toFixed(2) + ' kWh';
+  document.getElementById('res-rho').innerText = rho.toFixed(4) + ' kg/Nm3';
+  document.getElementById('res-energie').innerText = energieKWh.toFixed(2) + ' kWh (PCS)';
+  document.getElementById('res-o2').innerText = masseO2.toFixed(2) + ' kg de O2';
+  document.getElementById('res-air').innerText = masseAir.toFixed(2) + " kg d'air";
+  document.getElementById('res-air-vol').innerText = 'soit environ ' + volumeAirNm3.toFixed(2) + " Nm3 d'air";
+  document.getElementById('res-h2o').innerText = masseH2O.toFixed(2) + ' kg de H2O';
+  document.getElementById('res-h2o-vol').innerText = 'soit environ ' + volH2O.toFixed(2) + " Nm3 de vapeur d'eau";
+  document.getElementById('res-co2').innerText = masseCO2.toFixed(2) + ' kg de CO2';
+  document.getElementById('res-co2-vol').innerText = 'soit environ ' + volCO2.toFixed(2) + ' Nm3 de CO2';
+  document.getElementById('res-carbone').innerText = '(Soit ' + masseC.toFixed(2) + ' kg de carbone)';
 
-document.getElementById('res-rho').innerText = rho.toFixed(4) + ' kg/Nm3';
-document.getElementById('res-energie').innerText = energieKWh.toFixed(2) + ' kWh (PCS)';
-document.getElementById('res-o2').innerText = masseO2.toFixed(2) + ' kg de O2';
-document.getElementById('res-air').innerText = masseAir.toFixed(2) + " kg d'air";
-document.getElementById('res-air-vol').innerText = 'soit environ ' + volumeAirNm3.toFixed(2) + " Nm3 d'air";
-document.getElementById('res-h2o').innerText = masseH2O.toFixed(2) + ' kg de H2O';
-document.getElementById('res-h2o-vol').innerText = 'soit environ ' + volH2O.toFixed(2) + " Nm3 de vapeur d'eau";
-document.getElementById('res-co2').innerText = masseCO2.toFixed(2) + ' kg de CO2';
-document.getElementById('res-co2-vol').innerText = 'soit environ ' + volCO2.toFixed(2) + ' Nm3 de CO2';
-document.getElementById('res-carbone').innerText = '(Soit ' + masseC.toFixed(2) + ' kg de carbone)';
+  var kmVoiture = masseCO2 / 0.12;
+  var arbresAnnee = masseCO2 / 25;
+  document.getElementById('impact-voiture').innerText = 'Equivalent en km parcourus en voiture : ' + kmVoiture.toFixed(0) + ' km';
+  document.getElementById('impact-arbres').innerText = 'Arbres necessaires pendant 1 an pour absorber ce CO2 : ' + arbresAnnee.toFixed(2) + ' arbre(s)';
 
-var kmVoiture = masseCO2 / 0.12;
-var arbresAnnee = masseCO2 / 25;
-document.getElementById('impact-voiture').innerText = 'Equivalent en km parcourus en voiture : ' + kmVoiture.toFixed(0) + ' km';
-document.getElementById('impact-arbres').innerText = 'Arbres necessaires pendant 1 an pour absorber ce CO2 : ' + arbresAnnee.toFixed(2) + ' arbre(s)';
+  document.getElementById('resultats').style.display = "block";
+  dessinerCamembert(melangeActuel);
 
-document.getElementById('resultats').style.display = "block";
-dessinerCamembert(melangeActuel);
-
-derniersResultats = { masseKg: masseKg, volumeNm3: volumeNm3, energieKWh: energieKWh, rho: rho, masseO2: masseO2, masseAir: masseAir, volumeAirNm3: volumeAirNm3, masseH2O: masseH2O, volH2O: volH2O, masseCO2: masseCO2, volCO2: volCO2, masseC: masseC, unite: unite, quantite: quantite, composition: melangeActuel.slice(), kmVoiture: kmVoiture, arbresAnnee: arbresAnnee };
-ajouterHistorique(derniersResultats);
+  derniersResultats = {
+    masseKg: masseKg, volumeNm3: volumeNm3, energieKWh: energieKWh, rho: rho,
+    masseO2: masseO2, masseAir: masseAir, volumeAirNm3: volumeAirNm3,
+    masseH2O: masseH2O, volH2O: volH2O, masseCO2: masseCO2, volCO2: volCO2, masseC: masseC,
+    unite: unite, quantite: quantite, composition: melangeActuel.slice(),
+    kmVoiture: kmVoiture, arbresAnnee: arbresAnnee
+  };
+  ajouterHistorique(derniersResultats);
 }
 
 function dessinerCamembert(compo) {
-var canvas = document.getElementById('pieChart');
-var ctx = canvas.getContext('2d');
-var w = canvas.width, h = canvas.height;
-var cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 20;
-ctx.clearRect(0, 0, w, h);
-var couleurs = ['#e74c3c','#3498db','#27ae60','#f39c12','#9b59b6','#1abc9c','#e67e22','#34495e','#e91e63','#795548','#009688','#673ab7','#ff9800'];
-var tri = compo.slice().sort(function(a, b) { return b.pourcentage - a.pourcentage; });
-var total = tri.reduce(function(s, c) { return s + c.pourcentage; }, 0);
-if (total === 0) return;
-var angleDep = -Math.PI / 2;
-var legendeHTML = '';
-tri.forEach(function(c, i) {
-var angle = (c.pourcentage / total) * 2 * Math.PI;
-ctx.beginPath();
-ctx.moveTo(cx, cy);
-ctx.arc(cx, cy, r, angleDep, angleDep + angle);
-ctx.closePath();
-ctx.fillStyle = couleurs[i % couleurs.length];
-ctx.fill();
-ctx.strokeStyle = '#fff';
-ctx.lineWidth = 2;
-ctx.stroke();
-angleDep += angle;
-legendeHTML += '<div class="legend-item" style="background:' + couleurs[i % couleurs.length] + ';">' + c.espece + ' - ' + c.pourcentage.toFixed(2) + ' %</div>';
-});
-ctx.beginPath();
-ctx.arc(cx, cy, r * 0.4, 0, 2 * Math.PI);
-var bgColor = getComputedStyle(document.body).getPropertyValue('--card-bg').trim() || '#fff';
-ctx.fillStyle = bgColor;
-ctx.fill();
-document.getElementById('res-composition').innerHTML = legendeHTML + '<p style="text-align:center; margin-top:10px;"><em>Total : 100 % (fractions molaires / volumiques)</em></p>';
+  var canvas = document.getElementById('pieChart');
+  var ctx = canvas.getContext('2d');
+  var w = canvas.width, h = canvas.height;
+  var cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 20;
+  ctx.clearRect(0, 0, w, h);
+  var couleurs = ['#e74c3c','#3498db','#27ae60','#f39c12','#9b59b6','#1abc9c','#e67e22','#34495e','#e91e63','#795548','#009688','#673ab7','#ff9800'];
+  var tri = compo.slice().sort(function(a, b) { return b.pourcentage - a.pourcentage; });
+  var total = tri.reduce(function(s, c) { return s + c.pourcentage; }, 0);
+  if (total === 0) return;
+  var angleDep = -Math.PI / 2;
+  var legendeHTML = '';
+  tri.forEach(function(c, i) {
+    var angle = (c.pourcentage / total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angleDep, angleDep + angle);
+    ctx.closePath();
+    ctx.fillStyle = couleurs[i % couleurs.length];
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    angleDep += angle;
+    legendeHTML += '<div class="legend-item" style="background:' + couleurs[i % couleurs.length] + ';">' + c.espece + ' - ' + c.pourcentage.toFixed(2) + ' %</div>';
+  });
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.4, 0, 2 * Math.PI);
+  var bgColor = getComputedStyle(document.body).getPropertyValue('--card-bg').trim() || '#fff';
+  ctx.fillStyle = bgColor;
+  ctx.fill();
+  document.getElementById('res-composition').innerHTML = legendeHTML + '<p style="text-align:center; margin-top:10px;"><em>Total : 100 % (fractions molaires / volumiques)</em></p>';
 }
 
 function ajouterHistorique(res) {
-var item = {
-date: new Date().toLocaleString('fr-FR'),
-masseKg: res.masseKg.toFixed(2),
-energieKWh: res.energieKWh.toFixed(2),
-masseCO2: res.masseCO2.toFixed(2),
-composition: res.composition.map(function(c) { return c.espece + ':' + c.pourcentage.toFixed(1) + '%'; }).join(', ')
-};
-historique.unshift(item);
-if (historique.length > 5) historique = historique.slice(0, 5);
-localStorage.setItem('combustion_historique', JSON.stringify(historique));
-rafraichirHistorique();
+  var item = {
+    date: new Date().toLocaleString('fr-FR'),
+    masseKg: res.masseKg.toFixed(2),
+    energieKWh: res.energieKWh.toFixed(2),
+    masseCO2: res.masseCO2.toFixed(2),
+    composition: res.composition.map(function(c) { return c.espece + ':' + c.pourcentage.toFixed(1) + '%'; }).join(', ')
+  };
+  historique.unshift(item);
+  if (historique.length > 5) historique = historique.slice(0, 5);
+  localStorage.setItem('combustion_historique', JSON.stringify(historique));
+  rafraichirHistorique();
 }
 
 function rafraichirHistorique() {
-var div = document.getElementById('historique');
-if (historique.length === 0) { div.innerHTML = '<em>Aucun calcul enregistre.</em>'; return; }
-var html = '';
-historique.forEach(function(h, i) {
-html += '<div class="history-item"><strong>' + (i+1) + '. ' + h.date + '</strong><br>' + h.composition + '<br>Masse : ' + h.masseKg + ' kg | Energie : ' + h.energieKWh + ' kWh | CO2 : ' + h.masseCO2 + ' kg</div>';
-});
-div.innerHTML = html;
+  var div = document.getElementById('historique');
+  if (historique.length === 0) { div.innerHTML = '<em>Aucun calcul enregistre.</em>'; return; }
+  var html = '';
+  historique.forEach(function(h, i) {
+    html += '<div class="history-item"><strong>' + (i+1) + '. ' + h.date + '</strong><br>' + h.composition + '<br>Masse : ' + h.masseKg + ' kg | Energie : ' + h.energieKWh + ' kWh | CO2 : ' + h.masseCO2 + ' kg</div>';
+  });
+  div.innerHTML = html;
 }
 
 function sauvegarderMelange() {
-var data = {
-melange: melangeActuel,
-quantite: document.getElementById('quantite').value,
-unite: document.getElementById('unite').value,
-pression: document.querySelector('input[name="pression"]:checked').value
-};
-localStorage.setItem('combustion_melange', JSON.stringify(data));
-var msg = document.getElementById('save-msg');
-msg.innerText = "Melange sauvegarde localement.";
-msg.style.display = 'block';
-setTimeout(function() { msg.style.display = 'none'; }, 3000);
+  var data = {
+    melange: melangeActuel,
+    quantite: document.getElementById('quantite').value,
+    unite: document.getElementById('unite').value,
+    pression: document.querySelector('input[name="pression"]:checked').value
+  };
+  localStorage.setItem('combustion_melange', JSON.stringify(data));
+  var msg = document.getElementById('save-msg');
+  msg.innerText = "Melange sauvegarde localement.";
+  msg.style.display = 'block';
+  setTimeout(function() { msg.style.display = 'none'; }, 3000);
 }
 
 function toggleDarkMode() {
-document.body.classList.toggle('dark-mode');
-localStorage.setItem('combustion_dark', document.body.classList.contains('dark-mode') ? '1' : '0');
-if (derniersResultats) dessinerCamembert(melangeActuel);
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('combustion_dark', document.body.classList.contains('dark-mode') ? '1' : '0');
+  if (derniersResultats) dessinerCamembert(melangeActuel);
 }
 
+/* ---------- MÉLANGE ALÉATOIRE : vrai tirage sur toutes les espèces ---------- */
 function randomMelange() {
-var noms = Object.keys(MELANGES);
-var nom = noms[Math.floor(Math.random() * noms.length)];
-document.getElementById('choix-gaz').value = nom;
-chargerGazSelectionne();
-var msg = document.getElementById('random-msg');
-msg.innerText = "Gaz tire au sort : " + nom;
-msg.style.display = 'block';
-setTimeout(function() { msg.style.display = 'none'; }, 5000);
+  var especes = Object.keys(ESPECES);
+  var nb = 2 + Math.floor(Math.random() * 4); // 2 à 5 composants
+  // Mélange de Fisher-Yates
+  var shuffled = especes.slice();
+  for (var i = shuffled.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+  }
+  var choisis = shuffled.slice(0, nb);
+  // Poids aléatoires
+  var poids = choisis.map(function() { return Math.random() + 0.1; });
+  var totalPoids = poids.reduce(function(a,b) { return a+b; }, 0);
+  // Pourcentages à 0,1 % près
+  var pcts = poids.map(function(p) { return Math.round(p / totalPoids * 1000) / 10; });
+  // Correction d'arrondi : ramener la somme à exactement 100,0
+  var somme = pcts.reduce(function(a,b) { return a+b; }, 0);
+  var correction = Math.round((100 - somme) * 10) / 10;
+  pcts[0] = Math.round((pcts[0] + correction) * 10) / 10;
+  // Appliquer
+  document.getElementById('liste-melange').innerHTML = '';
+  melangeActuel = [];
+  for (var k = 0; k < choisis.length; k++) {
+    ajouterLigne(choisis[k], pcts[k]);
+  }
+  // Message
+  var msg = document.getElementById('random-msg');
+  var res = '<strong>Mélange aléatoire généré :</strong><br>';
+  for (var m = 0; m < choisis.length; m++) {
+    res += '- ' + choisis[m] + ' : ' + pcts[m].toFixed(1) + ' %<br>';
+  }
+  var totalFinal = pcts.reduce(function(a,b) { return a+b; }, 0);
+  res += '<br>Total : ' + totalFinal.toFixed(1) + ' %';
+  msg.innerHTML = res;
+  msg.style.display = 'block';
+  setTimeout(function() { msg.style.display = 'none'; }, 5000);
 }
 
 function coinCoin() {
-var div = document.getElementById('coin-msg');
-div.innerText = "       __\n   __(o )___\n  (  ._>  /\n   `---'\n\n   Coin coin !\n   Un canard passe, observe ton melange,\n   hoche la tete d'un air approbateur,\n   puis disparait dans la brume.";
-div.style.display = 'block';
-setTimeout(function() { div.style.display = 'none'; }, 6000);
+  var div = document.getElementById('coin-msg');
+  var ascii = "       __\n   __(o )___\n  (  ._>  /\n   `---'";
+  var html = '<pre class="ascii">' + ascii + '</pre>';
+  html += '<div class="vers">';
+  html += '<span class="vers-mark">&#10087;</span>Coin coin !<br>';
+  html += '<span class="vers-mark">&#10087;</span>Un canard passe, observe ton melange,<br>';
+  html += '<span class="vers-mark">&#10087;</span>hoche la tete d\'un air approbateur,<br>';
+  html += '<span class="vers-mark">&#10087;</span>puis disparait dans la brume.';
+  html += '</div>';
+  div.innerHTML = html;
+  div.style.display = 'block';
+  setTimeout(function() { div.style.display = 'none'; }, 6000);
 }
 
 function togglePsychedelic() {
-document.body.classList.add('psychedelic');
-if (psyTimeout) clearTimeout(psyTimeout);
-psyTimeout = setTimeout(function() { document.body.classList.remove('psychedelic'); }, 10000);
+  if (psyActive) stopPsychedelic();
+  else startPsychedelic();
+}
+function startPsychedelic() {
+  psyActive = true;
+  document.body.classList.add('psychedelic');
+  startPsyCountdown(10);
+}
+function startPsyCountdown(sec) {
+  var remaining = sec;
+  updatePsyCount(remaining);
+  if (psyInterval) clearInterval(psyInterval);
+  psyInterval = setInterval(function() {
+    remaining--;
+    updatePsyCount(remaining);
+    if (remaining <= 0) {
+      clearInterval(psyInterval);
+      var next = Math.floor(Math.random() * 4) + 2;
+      setTimeout(function() { if (psyActive) startPsyCountdown(next); }, 400);
+    }
+  }, 1000);
+}
+function updatePsyCount(sec) {
+  var el = document.getElementById('psy-count');
+  if (el) el.innerText = (sec > 0) ? ' — ' + sec + ' s' : '';
+}
+function stopPsychedelic() {
+  psyActive = false;
+  document.body.classList.remove('psychedelic');
+  if (psyInterval) clearInterval(psyInterval);
+  updatePsyCount(0);
 }
 
+/* ---------- VACHE-TRACTION :  1 VT = 2 CV = 1,471 kW ---------- */
 function converterVache() {
-var div = document.getElementById('cow-msg');
-if (!derniersResultats) { alert("Veuillez d'abord effectuer un calcul."); return; }
-var kWh = derniersResultats.energieKWh;
-var heuresVache = kWh / 0.5;
-var vachesAnnees = heuresVache / (24 * 365);
-var t1 = 15420 / 0.756;
-var t10 = 154200 / 0.756;
-var t127 = 15420 * 127 / 0.756;
-div.innerHTML = '<strong>Convertisseur vache-traction + lait</strong><br><br>' +
-'Energie du melange : ' + kWh.toFixed(2) + ' kWh<br>' +
-'Equivalent en heures-vache (base : 1 vache = 500 W) : ' + heuresVache.toFixed(0) + ' h<br>' +
-'Soit ' + (heuresVache / 24).toFixed(1) + ' jours non-stop.<br>' +
-'Equivalent en vaches-annee : ' + vachesAnnees.toFixed(2) + ' vache.an.<br><br>' +
-'<strong>Table de conversion croisee (kWh vers litres de lait entier)</strong>' +
-'<table><thead><tr><th>Energie</th><th>Litres de lait entier</th></tr></thead><tbody>' +
-'<tr><td>1 kWh</td><td>' + (1 / 0.756).toFixed(2) + ' L</td></tr>' +
-'<tr><td>100 kWh</td><td>' + (100 / 0.756).toFixed(0) + ' L</td></tr>' +
-'<tr><td>1 000 kWh</td><td>' + (1000 / 0.756).toFixed(0) + ' L</td></tr>' +
-'</tbody></table>' +
-'<strong>Pour information :</strong> pour egaler l\'energie de combustion de 1, 10 et 127 tonnes de methane, il faudrait :' +
-'<table><thead><tr><th>Methane</th><th>Litres de lait entier</th></tr></thead><tbody>' +
-'<tr><td>1 tonne</td><td>' + t1.toFixed(0) + ' L</td></tr>' +
-'<tr><td>10 tonnes</td><td>' + t10.toFixed(0) + ' L</td></tr>' +
-'<tr><td>127 tonnes</td><td>' + t127.toFixed(0) + ' L</td></tr>' +
-'</tbody></table>' +
-'<p style="font-size:0.8em; opacity:0.75; margin-top:10px;"><em>Pour plus d\'explications ou une application de conversion, ecrivez-nous.</em></p>';
-div.style.display = 'block';
+  var div = document.getElementById('cow-msg');
+  if (!derniersResultats) { alert("Veuillez d'abord compléter le mélange à 100%."); return; }
+  var kWh = derniersResultats.energieKWh;
+  var kcal = kWh * 860;
+  var kWhParVT = 2 * 0.7355;
+  var VT = kWh / kWhParVT;
+
+  var masseReelle = derniersResultats.masseKg;
+  var kWhParKg = kWh / masseReelle;
+  var masseRef = [1, 10, 127];
+  var lignesVT = '';
+  masseRef.forEach(function(m) {
+    var e = kWhParKg * m;
+    var v = e / kWhParVT;
+    lignesVT += '<tr><td>' + m + ' kg</td><td>' + e.toFixed(2) + ' kWh</td><td>' + v.toFixed(3) + ' VT.h</td></tr>';
+  });
+
+  var litresLait = kcal / 650;
+  var html = '';
+  html += '<strong>Convertisseur vache-traction + lait</strong><br><br>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span><strong>Formule de conversion :</strong></div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>1 VT (vache-traction) = 2 CV = 2 × 0,7355 kW = 1,471 kW</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>donc 1 heure de vache-traction = 1,471 kWh</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>et 1 kWh = 1 / 1,471 = 0,6798 VT.h</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Énergie du mélange : <strong>' + kWh.toFixed(2) + ' kWh</strong> = <strong>' + VT.toFixed(3) + ' VT.h</strong></div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Soit ' + (VT / 24).toFixed(2) + ' vache.jour, ou ' + (VT / (24*365)).toFixed(4) + ' vache.an.</div><br>';
+
+  html += '<strong>Conversion de 1 kg, 10 kg et 127 kg de mélange en vache-traction :</strong>';
+  html += '<table><thead><tr><th>Masse de mélange</th><th>Énergie PCS</th><th>Équivalent VT.h</th></tr></thead><tbody>' + lignesVT + '</tbody></table>';
+
+  html += '<div class="warn-box"><strong>⚠ Avertissement épistémologique</strong><br>';
+  html += 'Les <em>kilocalories de combustion</em> (issues du PCS, chaleur libérée par oxydation) et les <em>kilocalories culinaires</em> (énergie métabolisable des aliments) sont deux grandeurs <strong>physiquement étrangères</strong> l\'une à l\'autre : l\'une est une enthalpie de réaction, l\'autre un indice nutritionnel. Les comparer ne produit <strong>aucune information utile</strong>. On le fait quand même, parce que c\'est le fun et qu\'il nous reste des tokens.</div>';
+
+  html += '<strong>Égalité syntaxique :</strong><br>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>' + kWh.toFixed(2) + ' kWh de combustion  ↔  ' + kcal.toFixed(0) + ' kcal (PCS)</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Or 1 L de lait entier ≈ 650 kcal culinaires.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Donc ' + kcal.toFixed(0) + ' kcal  ↔  ' + litresLait.toFixed(2) + ' L de lait entier.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>« Le mélange vaut ' + litresLait.toFixed(0) + ' litres de lait. » — poétiquement vrai, physiquement nul.</div>';
+
+  html += '<p style="font-size:0.8em; opacity:0.75; margin-top:10px;"><em>Pour plus d\'explications ou une application de conversion, écrivez-nous.</em></p>';
+  div.innerHTML = html;
+  div.style.display = 'block';
 }
 
+/* ---------- CANARD-POUSSE : 1 CP = 50 Wh ; coin coin : 1 dBcc = 57 dB ---------- */
 function convertirCanard() {
-var div = document.getElementById('duck-msg');
-if (!derniersResultats) { alert("Veuillez d'abord effectuer un calcul."); return; }
-var Wh = derniersResultats.energieKWh * 1000;
-var nbCanards = Wh / 50;
-var E_cuisson_kJ = 4 * 3.5 * (68 - 25);
-var E_cuisson_kWh = E_cuisson_kJ / 3600;
-var coins_cuisson = E_cuisson_kJ * 1000;
-var dBcc_cuisson = 10 * Math.log10(coins_cuisson);
-function dbcc(kWh) { return 10 * Math.log10(kWh * 3.6e6); }
-div.innerHTML = '<strong>Canard-pousse + decibel coin coin</strong><br><br>' +
-'Energie du melange : ' + Wh.toFixed(0) + ' Wh<br>' +
-'Equivalent en canards-pousse (1 canard-pousse = 50 Wh) : ' + nbCanards.toFixed(0) + ' canards-pousse<br>' +
-'Soit ' + (nbCanards / 24).toFixed(1) + ' canards-pousse.jour.<br><br>' +
-'<strong>Table de conversion en decibel coin coin (dBcc)</strong>' +
-'Hypothese : 1 coin coin de 1 seconde = 1 J acoustique.<br>' +
-'<table><thead><tr><th>Methane</th><th>Energie (kWh)</th><th>Niveau en dBcc</th></tr></thead><tbody>' +
-'<tr><td>1 tonne</td><td>15 420</td><td>' + dbcc(15420).toFixed(1) + ' dBcc</td></tr>' +
-'<tr><td>10 tonnes</td><td>154 200</td><td>' + dbcc(154200).toFixed(1) + ' dBcc</td></tr>' +
-'<tr><td>127 tonnes</td><td>1 958 340</td><td>' + dbcc(1958340).toFixed(1) + ' dBcc</td></tr>' +
-'</tbody></table>' +
-'<strong>Cuisson d\'un canard de 4 kg (25 C vers 68 C, c = 3.5 kJ/kg.C)</strong><br>' +
-'Energie necessaire : ' + E_cuisson_kJ.toFixed(0) + ' kJ = ' + E_cuisson_kWh.toFixed(4) + ' kWh<br>' +
-'Niveau sonore equivalent : ' + dBcc_cuisson.toFixed(1) + ' dBcc<br>' +
-'Soit ' + coins_cuisson.toFixed(0) + ' coins coin d\'une seconde, ou ' + (coins_cuisson / 60).toFixed(0) + ' minutes de coin coin continu.<br><br>' +
-'<p style="font-size:0.8em; opacity:0.75;"><em>Pour plus d\'explications ou une application de conversion, ecrivez-nous.</em></p>';
-div.style.display = 'block';
+  var div = document.getElementById('duck-msg');
+  if (!derniersResultats) { alert("Veuillez d'abord compléter le mélange à 100%."); return; }
+  var Wh = derniersResultats.energieKWh * 1000;
+  var kWh = derniersResultats.energieKWh;
+
+  var masseReelle = derniersResultats.masseKg;
+  var kWhParKg = kWh / masseReelle;
+  var masseRef = [1, 10, 127];
+  var lignesCP = '';
+  masseRef.forEach(function(m) {
+    var eKWh = kWhParKg * m;
+    var eWh = eKWh * 1000;
+    var nb = eWh / 50;
+    lignesCP += '<tr><td>' + m + ' kg</td><td>' + eKWh.toFixed(2) + ' kWh</td><td>' + nb.toFixed(0) + ' canards-pousse</td></tr>';
+  });
+
+  var E_cuisson_kJ = 4 * 3.5 * (68 - 25);
+  var E_cuisson_J  = E_cuisson_kJ * 1000;
+  var E_cuisson_kWh = E_cuisson_kJ / 3600;
+  var COINS_PAR_CANARD_PAR_SEC = 6;
+  var J_PAR_COIN = 1;
+  var E_par_canard_par_seconde = COINS_PAR_CANARD_PAR_SEC * J_PAR_COIN;
+  var duree_s = 2;
+  var nb_canards_cuisson = E_cuisson_J / (E_par_canard_par_seconde * duree_s);
+  var N_canards_50k = 50000;
+  var coins_par_seconde_50k = N_canards_50k * COINS_PAR_CANARD_PAR_SEC;
+  var dBcc_50k = 10 * Math.log10(coins_par_seconde_50k);
+  var E_50k = N_canards_50k * E_par_canard_par_seconde * duree_s;
+
+  var html = '';
+  html += '<strong>Canard-pousse + décibel coin coin</strong><br><br>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span><strong>1 canard-pousse = 50 Wh</strong> (rendement d\'un canard en pleine forme sur 1 heure).</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Énergie du mélange : ' + kWh.toFixed(2) + ' kWh = ' + Wh.toFixed(0) + ' Wh.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Soit ' + (Wh / 50).toFixed(0) + ' canards-pousse.heure.</div><br>';
+  html += '<strong>Conversion de 1 kg, 10 kg et 127 kg de mélange en canards-pousse :</strong>';
+  html += '<table><thead><tr><th>Masse de mélange</th><th>Énergie PCS</th><th>Équivalent canards-pousse</th></tr></thead><tbody>' + lignesCP + '</tbody></table>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span><strong>Modèle acoustique coin coin :</strong></div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>1 canard cancanne à 57 dB SPL. Convention : 1 dBcc = 57 dB.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>On suppose ~6 coins coin par seconde et par canard, chaque coin coin = 1 J.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Donc 1 canard fournit 6 J/s ; son niveau vaut L = 10.log10(6) = ' + (10*Math.log10(6)).toFixed(2) + ' dBcc.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span><strong>Cuisson d\'un canard de 4 kg (25 → 68 °C, c = 3,5 kJ/kg.°C) :</strong></div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>E = 4 × 3,5 × (68 − 25) = ' + E_cuisson_kJ.toFixed(0) + ' kJ = ' + E_cuisson_J.toFixed(0) + ' J.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Il faut faire cancaner <strong>' + nb_canards_cuisson.toFixed(0) + ' canards</strong> pendant ' + duree_s + ' s.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Comme par hasard, on retombe sur ~50 000 canards × 2 s. C\'est beau.</div><br>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span><strong>Réciproque :</strong> 50 000 canards qui cancanent simultanément produisent :</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Niveau : L = 10.log10(50 000 × 6) = ' + dBcc_50k.toFixed(2) + ' dBcc.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Énergie acoustique en 2 s : ' + E_50k.toFixed(0) + ' J = ' + (E_50k / 1000).toFixed(1) + ' kJ.</div>';
+  html += '<div class="vers vers-dense"><span class="vers-mark">&#10087;</span>Or E_cuisson = ' + E_cuisson_kJ.toFixed(0) + ' kJ. <strong>CQFD : le canard est cuit.</strong></div>';
+  html += '<p style="font-size:0.8em; opacity:0.75;"><em>Pour plus d\'explications ou une application de conversion, écrivez-nous.</em></p>';
+  div.innerHTML = html;
+  div.style.display = 'block';
 }
 
 function copierResultats() {
-if (!derniersResultats) { alert("Veuillez d'abord effectuer un calcul."); return; }
-var r = derniersResultats;
-var compTexte = "";
-r.composition.forEach(function(c) { compTexte += '  - ' + c.espece + ' : ' + c.pourcentage.toFixed(2) + ' %\n'; });
-var texte = 'RESULTATS DU CALCUL DE COMBUSTION\n================================\n\n' +
-'COMPOSITION DU MELANGE (fractions molaires / volumiques)\n' + compTexte + '  Total : 100 %\n\n' +
-'Quantite de melange :\n  ' + r.masseKg.toFixed(2) + ' kg\n  ' + r.volumeNm3.toFixed(2) + ' Nm3\n  ' + r.energieKWh.toFixed(2) + ' kWh\n\n' +
-'Masse volumique du melange : ' + r.rho.toFixed(4) + ' kg/Nm3\n\n' +
-'Air requis :\n  ' + r.masseO2.toFixed(2) + ' kg de O2\n  ' + r.masseAir.toFixed(2) + ' kg d\'air\n  soit environ ' + r.volumeAirNm3.toFixed(2) + ' Nm3 d\'air\n\n' +
-'Eau produite :\n  ' + r.masseH2O.toFixed(2) + ' kg de H2O\n  soit environ ' + r.volH2O.toFixed(2) + ' Nm3 de vapeur d\'eau\n\n' +
-'CO2 emis :\n  ' + r.masseCO2.toFixed(2) + ' kg de CO2\n  soit environ ' + r.volCO2.toFixed(2) + ' Nm3 de CO2\n  (Soit ' + r.masseC.toFixed(2) + ' kg de carbone)\n\n' +
-'Impact environnemental :\n  Equivalent voiture : ' + r.kmVoiture.toFixed(0) + ' km\n  Arbres.an : ' + r.arbresAnnee.toFixed(2);
-navigator.clipboard.writeText(texte).then(function() {
-var msg = document.getElementById('copier-message');
-msg.innerText = "Resultats copies dans le presse-papiers !";
-msg.style.display = 'block';
-setTimeout(function() { msg.style.display = 'none'; }, 3000);
-}).catch(function(err) { alert("Erreur de copie : " + err); });
+  if (!derniersResultats) { alert("Veuillez d'abord compléter le mélange à 100%."); return; }
+  var r = derniersResultats;
+  var compTexte = "";
+  r.composition.forEach(function(c) { compTexte += '  - ' + c.espece + ' : ' + c.pourcentage.toFixed(2) + ' %\n'; });
+  var texte = 'RESULTATS DU CALCUL DE COMBUSTION\n================================\n\n' +
+    'COMPOSITION DU MELANGE (fractions molaires / volumiques)\n' + compTexte + '  Total : 100 %\n\n' +
+    'Quantite de melange :\n  ' + r.masseKg.toFixed(2) + ' kg\n  ' + r.volumeNm3.toFixed(2) + ' Nm3\n  ' + r.energieKWh.toFixed(2) + ' kWh\n\n' +
+    'Masse volumique du melange : ' + r.rho.toFixed(4) + ' kg/Nm3\n\n' +
+    'Air requis :\n  ' + r.masseO2.toFixed(2) + ' kg de O2\n  ' + r.masseAir.toFixed(2) + ' kg d\'air\n  soit environ ' + r.volumeAirNm3.toFixed(2) + ' Nm3 d\'air\n\n' +
+    'Eau produite :\n  ' + r.masseH2O.toFixed(2) + ' kg de H2O\n  soit environ ' + r.volH2O.toFixed(2) + ' Nm3 de vapeur d\'eau\n\n' +
+    'CO2 emis :\n  ' + r.masseCO2.toFixed(2) + ' kg de CO2\n  soit environ ' + r.volCO2.toFixed(2) + ' Nm3 de CO2\n  (Soit ' + r.masseC.toFixed(2) + ' kg de carbone)\n\n' +
+    'Impact environnemental :\n  Equivalent voiture : ' + r.kmVoiture.toFixed(0) + ' km\n  Arbres.an : ' + r.arbresAnnee.toFixed(2);
+  navigator.clipboard.writeText(texte).then(function() {
+    var msg = document.getElementById('copier-message');
+    msg.innerText = "Resultats copies dans le presse-papiers !";
+    msg.style.display = 'block';
+    setTimeout(function() { msg.style.display = 'none'; }, 3000);
+  }).catch(function(err) { alert("Erreur de copie : " + err); });
 }
 
 function exporterCSV() {
-if (!derniersResultats) { alert("Veuillez d'abord effectuer un calcul."); return; }
-var r = derniersResultats;
-var csv = 'RESULTATS DU CALCUL DE COMBUSTION\n\n';
-csv += 'Composition du melange (fractions molaires / volumiques);;\n';
-csv += 'Espece;Pourcentage (%)\n';
-r.composition.forEach(function(c) { csv += c.espece + ';' + c.pourcentage.toFixed(2) + '\n'; });
-csv += 'Total;100.00\n\n';
-csv += 'Bilan de combustion;;\n';
-csv += 'Parametre;Valeur;Unite\n';
-csv += 'Masse totale;' + r.masseKg.toFixed(2) + ';kg\n';
-csv += 'Volume total;' + r.volumeNm3.toFixed(2) + ';Nm3\n';
-csv += 'Energie (PCS);' + r.energieKWh.toFixed(2) + ';kWh\n';
-csv += 'Masse volumique;' + r.rho.toFixed(4) + ';kg/Nm3\n';
-csv += 'O2 requis;' + r.masseO2.toFixed(2) + ';kg\n';
-csv += 'Air requis;' + r.masseAir.toFixed(2) + ';kg\n';
-csv += 'Volume air;' + r.volumeAirNm3.toFixed(2) + ';Nm3\n';
-csv += 'H2O produite;' + r.masseH2O.toFixed(2) + ';kg\n';
-csv += 'Volume H2O;' + r.volH2O.toFixed(2) + ';Nm3\n';
-csv += 'CO2 emis;' + r.masseCO2.toFixed(2) + ';kg\n';
-csv += 'Volume CO2;' + r.volCO2.toFixed(2) + ';Nm3\n';
-csv += 'Carbone;' + r.masseC.toFixed(2) + ';kg\n';
-csv += 'Impact voiture;' + r.kmVoiture.toFixed(0) + ';km\n';
-csv += 'Impact arbres.an;' + r.arbresAnnee.toFixed(2) + ';arbres.an\n';
-var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-var url = URL.createObjectURL(blob);
-var a = document.createElement('a');
-a.href = url;
-a.download = 'resultats_combustion.csv';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-var msg = document.getElementById('csv-message');
-msg.innerText = "Fichier CSV telecharge !";
-msg.style.display = 'block';
-setTimeout(function() { msg.style.display = 'none'; }, 3000);
+  if (!derniersResultats) { alert("Veuillez d'abord compléter le mélange à 100%."); return; }
+  var r = derniersResultats;
+  var csv = 'RESULTATS DU CALCUL DE COMBUSTION\n\n';
+  csv += 'Composition du melange (fractions molaires / volumiques);;\n';
+  csv += 'Espece;Pourcentage (%)\n';
+  r.composition.forEach(function(c) { csv += c.espece + ';' + c.pourcentage.toFixed(2) + '\n'; });
+  csv += 'Total;100.00\n\n';
+  csv += 'Bilan de combustion;;\n';
+  csv += 'Parametre;Valeur;Unite\n';
+  csv += 'Masse totale;' + r.masseKg.toFixed(2) + ';kg\n';
+  csv += 'Volume total;' + r.volumeNm3.toFixed(2) + ';Nm3\n';
+  csv += 'Energie (PCS);' + r.energieKWh.toFixed(2) + ';kWh\n';
+  csv += 'Masse volumique;' + r.rho.toFixed(4) + ';kg/Nm3\n';
+  csv += 'O2 requis;' + r.masseO2.toFixed(2) + ';kg\n';
+  csv += 'Air requis;' + r.masseAir.toFixed(2) + ';kg\n';
+  csv += 'Volume air;' + r.volumeAirNm3.toFixed(2) + ';Nm3\n';
+  csv += 'H2O produite;' + r.masseH2O.toFixed(2) + ';kg\n';
+  csv += 'Volume H2O;' + r.volH2O.toFixed(2) + ';Nm3\n';
+  csv += 'CO2 emis;' + r.masseCO2.toFixed(2) + ';kg\n';
+  csv += 'Volume CO2;' + r.volCO2.toFixed(2) + ';Nm3\n';
+  csv += 'Carbone;' + r.masseC.toFixed(2) + ';kg\n';
+  csv += 'Impact voiture;' + r.kmVoiture.toFixed(0) + ';km\n';
+  csv += 'Impact arbres.an;' + r.arbresAnnee.toFixed(2) + ';arbres.an\n';
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'resultats_combustion.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  var msg = document.getElementById('csv-message');
+  msg.innerText = "Fichier CSV telecharge !";
+  msg.style.display = 'block';
+  setTimeout(function() { msg.style.display = 'none'; }, 3000);
 }
 
 function reinitialiser() {
-document.getElementById('liste-melange').innerHTML = '';
-melangeActuel = [];
-ajouterLigne("CH4", 100);
-document.getElementById('quantite').value = 100;
-document.getElementById('unite').value = 'Nm3';
-document.querySelector('input[name="pression"][value="1"]').checked = true;
-document.getElementById('resultats').style.display = 'none';
-document.getElementById('message-erreur').innerText = '';
-var texts = document.querySelectorAll('.action-text');
-texts.forEach(function(d) { d.style.display = 'none'; });
-derniersResultats = null;
-localStorage.removeItem('combustion_melange');
+  document.getElementById('liste-melange').innerHTML = '';
+  melangeActuel = [];
+  ajouterLigne("CH4", 100);
+  document.getElementById('quantite').value = 100;
+  document.getElementById('unite').value = 'Nm3';
+  document.querySelector('input[name="pression"][value="1"]').checked = true;
+  document.getElementById('resultats').style.display = 'none';
+  document.getElementById('message-erreur').innerText = '';
+  var texts = document.querySelectorAll('.action-text');
+  texts.forEach(function(d) { d.style.display = 'none'; });
+  derniersResultats = null;
+  localStorage.removeItem('combustion_melange');
 }
 
 function chargerMeteo() {
-var div = document.getElementById('meteo');
-div.style.display = 'block';
-div.innerText = "Chargement de la meteo locale...";
-fetch('https://ipwho.is/')
-.then(function(r) { return r.json(); })
-.then(function(geo) {
-if (!geo.success) throw new Error("Geolocalisation impossible");
-var lat = geo.latitude, lon = geo.longitude;
-var ville = geo.city || geo.region || "Lieu inconnu";
-var pays = geo.country || "";
-return fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=2')
-.then(function(r) { return r.json(); })
-.then(function(m) {
-var aj = {tmax: m.daily.temperature_2m_max[0], tmin: m.daily.temperature_2m_min[0], code: m.daily.weather_code[0], pluie: m.daily.precipitation_sum[0]};
-var dem = {tmax: m.daily.temperature_2m_max[1], tmin: m.daily.temperature_2m_min[1], code: m.daily.weather_code[1], pluie: m.daily.precipitation_sum[1]};
-var act = {temp: m.current.temperature_2m, code: m.current.weather_code, vent: m.current.wind_speed_10m, hum: m.current.relative_humidity_2m};
-div.innerText = ville + ', ' + pays + '\n\n' +
-"AUJOURD'HUI (" + m.daily.time[0] + ')\n   ' + descMeteo(aj.code) + '\n   Min ' + aj.tmin + ' C / Max ' + aj.tmax + ' C\n   Precipitations : ' + aj.pluie + ' mm\n\n' +
-'DEMAIN (' + m.daily.time[1] + ')\n   ' + descMeteo(dem.code) + '\n   Min ' + dem.tmin + ' C / Max ' + dem.tmax + ' C\n   Precipitations : ' + dem.pluie + ' mm\n\n' +
-'ACTUELLEMENT\n   ' + descMeteo(act.code) + '\n   ' + act.temp + ' C\n   Vent : ' + act.vent + ' km/h\n   Humidite : ' + act.hum + ' %';
-});
-})
-.catch(function(err) { div.innerText = "Impossible de charger la meteo : " + err.message; });
+  var div = document.getElementById('meteo');
+  div.style.display = 'block';
+  div.innerText = "Chargement de la meteo locale...";
+  fetch('https://ipwho.is/')
+    .then(function(r) { return r.json(); })
+    .then(function(geo) {
+      if (!geo.success) throw new Error("Geolocalisation impossible");
+      var lat = geo.latitude, lon = geo.longitude;
+      var ville = geo.city || geo.region || "Lieu inconnu";
+      var pays = geo.country || "";
+      return fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=2')
+        .then(function(r) { return r.json(); })
+        .then(function(m) {
+          var aj = {tmax: m.daily.temperature_2m_max[0], tmin: m.daily.temperature_2m_min[0], code: m.daily.weather_code[0], pluie: m.daily.precipitation_sum[0]};
+          var dem = {tmax: m.daily.temperature_2m_max[1], tmin: m.daily.temperature_2m_min[1], code: m.daily.weather_code[1], pluie: m.daily.precipitation_sum[1]};
+          var act = {temp: m.current.temperature_2m, code: m.current.weather_code, vent: m.current.wind_speed_10m, hum: m.current.relative_humidity_2m};
+          div.innerText = 'Serveur météo localisé près de : ' + ville + ', ' + pays + '\n\n' +
+            "AUJOURD'HUI (" + m.daily.time[0] + ')\n   ' + descMeteo(aj.code) + '\n   Min ' + aj.tmin + ' C / Max ' + aj.tmax + ' C\n   Precipitations : ' + aj.pluie + ' mm\n\n' +
+            'DEMAIN (' + m.daily.time[1] + ')\n   ' + descMeteo(dem.code) + '\n   Min ' + dem.tmin + ' C / Max ' + dem.tmax + ' C\n   Precipitations : ' + dem.pluie + ' mm\n\n' +
+            'ACTUELLEMENT\n   ' + descMeteo(act.code) + '\n   ' + act.temp + ' C\n   Vent : ' + act.vent + ' km/h\n   Humidite : ' + act.hum + ' %';
+        });
+    })
+    .catch(function(err) { div.innerText = "Impossible de charger la meteo : " + err.message; });
 }
 
 function descMeteo(code) {
-var d = {0:"Ciel degage",1:"Principalement degage",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine legere",53:"Bruine moderee",55:"Bruine dense",61:"Pluie legere",63:"Pluie moderee",65:"Pluie forte",71:"Neige legere",73:"Neige moderee",75:"Neige forte",77:"Grains de neige",80:"Averses legeres",81:"Averses moderees",82:"Averses violentes",85:"Averses de neige",86:"Averses de neige fortes",95:"Orage",96:"Orage grele legere",99:"Orage grele forte"};
-return d[code] || "?";
+  var d = {0:"Ciel degage",1:"Principalement degage",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine legere",53:"Bruine moderee",55:"Bruine dense",61:"Pluie legere",63:"Pluie moderee",65:"Pluie forte",71:"Neige legere",73:"Neige moderee",75:"Neige forte",77:"Grains de neige",80:"Averses legeres",81:"Averses moderees",82:"Averses violentes",85:"Averses de neige",86:"Averses de neige fortes",95:"Orage",96:"Orage grele legere",99:"Orage grele forte"};
+  return d[code] || "?";
 }
 
 document.addEventListener('change', function() {
-try {
-var data = {
-melange: melangeActuel,
-quantite: document.getElementById('quantite').value,
-unite: document.getElementById('unite').value,
-pression: document.querySelector('input[name="pression"]:checked').value
-};
-localStorage.setItem('combustion_melange', JSON.stringify(data));
-} catch(e) {}
+  try {
+    var data = {
+      melange: melangeActuel,
+      quantite: document.getElementById('quantite').value,
+      unite: document.getElementById('unite').value,
+      pression: document.querySelector('input[name="pression"]:checked').value
+    };
+    localStorage.setItem('combustion_melange', JSON.stringify(data));
+  } catch(e) {}
 });
 </script>
-</body>
-</html>
+
+</body></html>
